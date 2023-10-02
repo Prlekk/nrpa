@@ -29,3 +29,4 @@ std::vector<Student> Subject::getStudents() {
 void Subject::addStudent(Student student) {
     students.push_back(student);
 }
+
