@@ -36,7 +36,7 @@ void sleep(int time) {
 void printText(std::string str) {
     for (int i = 0; i < str.length(); i++) {
         std::cout << str[i] << std::flush;
-        sleep(20);
+        sleep(15);
     }
     std::cout << std::endl;
 }
