@@ -38,6 +38,8 @@ class Grade {
 
     //Class methods
 };
+
+//Other
 void sleep(int time);
 void printText(std::string str);
 
