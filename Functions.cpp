@@ -22,6 +22,30 @@ bool isInt(std::string str) {
     return true;
 }
 
+int toInt(std::string str) {
+    int num = 0;
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] < '0' || str[i] > '9') return -1;
+        num = num * 10;
+        num = num + (str[i] - '0');
+    }
+    return num;
+}
+
+double roundToTwoDecimals(double value) {
+    return std::round(value * 100.0) / 100.0;
+}
+
+std::string toLowerCase(std::string str) {
+    if(str.empty()) return "";
+    for(int i = 0; i < str.length(); i++) {
+        if(str[i] >= 'A' && str[i] <= 'Z') {
+            str[i] = str[i] + 32;
+        }
+    }
+    return str;
+}
+
 std::string randomDate() {
     int d = rand() % 31 + 1;
     int m = rand() % 12 + 1;
@@ -46,7 +70,8 @@ std::string randomDate() {
 }
 
 std::string generateEmso(std::string date) {
-    date = date.substr(0,2) + date.substr(3,2) + date.substr(6, 3) + randomNumber(4);
+    int num = rand() % 2 * 5;
+    date = date.substr(0,2) + date.substr(3,2) + date.substr(7, 3) + "50" + std::to_string(num) + randomNumber(3);
     return date;
 }
 
@@ -78,14 +103,20 @@ std::vector<Student> getStudentsFromFile(int size) {
     std::vector<std::string> surnames = extractFromFile("surnames.txt");
     std::vector<std::string> cities = extractFromFile("cities.txt");
     std::vector<std::string> countries = extractFromFile("countries.txt");
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(names.begin(), names.end(), g);
+    std::shuffle(surnames.begin(), surnames.end(), g);
+    std::shuffle(cities.begin(), cities.end(), g);
+    std::shuffle(countries.begin(), countries.end(), g);
+
     std::vector<Student> temp;
     for(int i = 0; i < size && i < 100; i++) {
-        Student s(i+1, surnames[i] + "." + names[i] + "@gmail.com", surnames[i] + " " + names[i], randomDate(), "", cities[i], countries[i], randomNumber(9));
+        Student s(i+1, toLowerCase(surnames[i]) + "." + toLowerCase(names[i]) + "@gmail.com", surnames[i] + " " + names[i], randomDate(), "", cities[i], countries[i], randomNumber(9));
         s.setEMSO(generateEmso(s.getBirthDate()));
         temp.push_back(s);
     }
-    std::random_device rd;
-    std::mt19937 g(rd());
     std::shuffle(temp.begin(), temp.end(), g);
     return temp;
 }
@@ -127,11 +158,74 @@ int firstAvaliableId(std::vector<Student> students) {
     return students[students.size()-1].getId() + 1;
 }
 
-std::string getSubjectName(int id, std::vector<Subject> subjects) {
+int findIndexWithId(int id, std::vector<Student> students) {
+    for(int i = 0; i < students.size(); i++) {
+        if(students[i].getId() == id) return i;
+    }
+    return -1;
+}
+
+int findIndexWithId(int id, std::vector<Subject> subjects) {
+    for(int i = 0; i < subjects.size(); i++) {
+        if(subjects[i].getId() == id) return i;
+    }
+    return -1;
+}
+
+int findIndexWithId(int id, std::vector<Grade> grades) {
+    for(int i = 0; i < grades.size(); i++) {
+        if(grades[i].getId() == id) return i;
+    }
+    return -1;
+}
+
+std::string getSubjectName(int id, std::vector<Subject> subjects)
+{
     for(auto i : subjects) {
         if(i.getId() == id) return i.getName();
     }
     return "";
+}
+
+std::string getStudentName(int id, std::vector<Student> students) {
+    for(auto i : students) {
+        if(i.getId() == id) return i.getName();
+    }
+    return "";
+}
+
+void selectStudentWhereIdIsInput(int selectedId, std::vector<Student> students, std::vector<Subject> subjects) {
+    int index = findIndexWithId(selectedId, students);
+    std::vector<Grade> grades = students[index].getGrades();
+    std::vector<int> distinctGrades = selectDistinctSubjects(grades);
+    printText("-----------------------");
+    printText("ID: " + std::to_string(students[index].getId()));
+    printText("Name: " + students[index].getName());
+    printText("Mail: " + students[index].getMail());
+    printText("Birth Date: " + students[index].getBirthDate());
+    printText("EMSO: " + students[index].getEMSO());
+    printText("City: " + students[index].getCity());
+    printText("Country: " + students[index].getCountry());
+    printText("Phone Number: " + students[index].getPhoneNumber());
+    printText("Grades:");
+    for(auto i : distinctGrades) {
+        printText("\t" + getSubjectName(i, subjects) + ":");
+        std::string line = "\t\t";
+        double average = 0;
+        double size = 0;
+        for(int j = 0; j < grades.size(); j++) {
+            if(grades[j].getSubjectId() == i) {
+                line = line + std::to_string(grades[j].getGrade()) + " ";
+                average += grades[j].getGrade();
+                size++;
+            }
+        }
+        if(!line.empty()) line;
+        printText(line);
+        printText("\tavg.:\t" + std::to_string(average / size));
+        printText("");
+    }
+    printText("-----------------------");
 }
 
 void selectIdAndNameFromStudents(std::vector<Student> students){
@@ -142,7 +236,52 @@ void selectIdAndNameFromStudents(std::vector<Student> students){
         line = std::to_string(i.getId()) + "\t| " + i.getName();
         printText(line);
     }
+    printText("");
+    printText("0\tExit program");
+    printText("-------------------------");
 }
+
+void selectIdAndNameFromSubjects(std::vector<Subject> subjects) {
+    std::string line = "";
+    printText("-----------------------");
+    printText("ID\t| Name");
+    printText("-----------------------");
+    for(auto i : subjects) {
+        line = std::to_string(i.getId()) + "\t| " + i.getName();
+        printText(line);
+    }
+    printText("");
+    printText("0\tExit program");
+    printText("-----------------------");
+}
+
+void selectIdAndNameFromGrades(std::vector<Grade> grades, std::vector<Subject> subjects, std::vector<Student> students) {
+    std::string line = "";
+    printText("----------------------------------------------");
+    printText("ID\t| Student\t| Subject\t| Grade");
+    printText("----------------------------------------------");
+    for(auto i : grades) {
+        std::string subject = getSubjectName(i.getSubjectId(), subjects);
+        std::string student = getStudentName(i.getStudentId(), students);
+        line = std::to_string(i.getId()) + "\t| " + student + "\t| " + subject + "\t\t| " + std::to_string(i.getGrade());
+        std::cout << line << std::endl;
+    }
+    printText("");
+    printText("0\tExit program");
+    printText("-----------------------");
+}
+
+std::vector<int> selectDistinctSubjects(std::vector<Grade> studentGrades) {
+    std::vector<int> temp;
+    for (Grade grade : studentGrades) {
+        int subjectId = grade.getSubjectId();
+        if (std::find(temp.begin(), temp.end(), subjectId) == temp.end()) {
+            temp.push_back(subjectId);
+        }
+    }
+    return temp;
+}
+
 
 void Student::addGrade(int num, std::vector<Grade> &allGrades) {
     int randomReason = rand() % 3;
@@ -160,4 +299,56 @@ void selectAllGrades(Student student, std::vector<Subject> subjects) {
         line = std::to_string(i.getId()) + "\t| " + getSubjectName(i.getSubjectId(), subjects) + "\t  | " + std::to_string(i.getGrade());
         printText(line);
     }
+    printText("");
+    printText("0\tExit program");
+    printText("-------------------------");
+}
+
+void createSchool(std::vector<Subject> &subjects, std::vector<Student> &students, std::vector<Grade> &grades) {
+    std::time_t currentTime = std::time(nullptr);
+    std::tm* timeInfo = std::localtime(&currentTime);
+    char timestamp[20]; // Format: YYYYMMDD_HHMMSS
+    std::strftime(timestamp, sizeof(timestamp), "%d%m%Y_%H%M%S", timeInfo);
+    std::string filename = "output_" + std::string(timestamp) + ".txt";
+    std::ofstream outputFile(filename);
+
+    if (!outputFile.is_open()) {
+        std::cerr << "Failed to open the file: " << filename << std::endl;
+    }else {
+        outputFile << "File created on " << timestamp << std::endl;
+        for(int i = 0; i < subjects.size(); i++) {
+            for(int j = 0; j < students.size(); j++) {
+                subjects[i].addStudent(students[j]);
+                outputFile << "Added " + students[j].getName() + " to " + subjects[i].getName() + "." << std::endl;
+                for(int k = 0; k < rand() % 4; k++) {
+                    students[j].addGrade(subjects[i].getId(), grades);
+                    outputFile << "Added grade ID " << students[j].getGrades()[students[j].getGrades().size()-1].getId() << " to " + students[j].getName() + "." << std::endl;
+                }
+            }
+        }
+    }
+    outputFile.close();
+}
+
+void mainUserInterface() {
+    printText("----------------------------");
+    printText("Choose an option:");
+    printText("1\tSubjects");
+    printText("2\tStudents");
+    printText("3\tGrades");
+    printText("");
+    printText("0\tExit program");
+    printText("----------------------------");
+}
+
+int userInput(int min, int max) {
+    std::string input = "";
+    do{
+        std::cout << "Input: ";
+        getline(std::cin, input);
+        if(toInt(input) < min || toInt(input) > max) {
+            printText("Invalid input. Try againn.");
+        }
+    }while(toInt(input) < min || toInt(input) > max);
+    return toInt(input);
 }
