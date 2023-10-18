@@ -1,0 +1,70 @@
+{
+    "data": [
+        {
+            "id": 2,
+            "Name": "Johnson Bob",
+            "Mail": "Johnson.Bob@gmail.com",
+            "Birth Date": "1-1-2022",
+            "EMSO": "1234567890123",
+            "City": "citycountry123456789",
+            "Country": "",
+            "Phone Number": "",
+            "Grades": [
+                {
+                    "id": 1,
+                    "studentId": 2,
+                    "subjectId": 1,
+                    "grade": 3,
+                    "gradeType": "Ustna"
+                },
+                {
+                    "id": 2,
+                    "studentId": 2,
+                    "subjectId": 2,
+                    "grade": 4,
+                    "gradeType": "Pisna"
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "Name": "Smith Alice",
+            "Mail": "Smith.Alice@gmail.com",
+            "Birth Date": "1-1-2022",
+            "EMSO": "1234567890123",
+            "City": "citycountry123456789",
+            "Country": "",
+            "Phone Number": ""
+        },
+        {
+            "id": 3,
+            "Name": "Brown Carol",
+            "Mail": "Brown.Carol@gmail.com",
+            "Birth Date": "1-1-2022",
+            "EMSO": "1234567890123",
+            "City": "citycountry123456789",
+            "Country": "",
+            "Phone Number": ""
+        },
+        {
+            "id": 4,
+            "Name": "Davis David",
+            "Mail": "Davis.David@gmail.com",
+            "Birth Date": "1-1-2022",
+            "EMSO": "1234567890123",
+            "City": "citycountry123456789",
+            "Country": "",
+            "Phone Number": ""
+        },
+        {
+            "id": 5,
+            "Name": "Wilon Emily",
+            "Mail": "Wilon.Emily@gmail.com",
+            "Birth Date": "1-1-2022",
+            "EMSO": "1234567890123",
+            "City": "citycountry123456789",
+            "Country": "",
+            "Phone Number": ""
+        }
+    ]
+}
