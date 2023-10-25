@@ -42,6 +42,16 @@ std::vector<int> selectStudentGradesFromSubject(Student student, int subjectId);
 double studentSuccess(Student &student);
 int userInput(int min, int max);
 void selectStudentOptions();
-void handleSelectedOptionForGrade(int selectedOption, int selectedId, std::vector<Student> students, std::vector<Subject> subjects);
+void handleSelectedOptionForGrade(int selectedOption, int selectedId, std::vector<Student> students, std::vector<Subject> subjects, std::vector<Grade> &allGrades);
+int binarySearch(std::vector<int> arr, int l, int r, int x);
+int binarySearch(std::vector<Grade> arr, int l, int r, int x);
+int binarySearch(std::vector<Subject> arr, int l, int r, int x);
+void printGradeInfo(Grade grade, std::vector<Subject> subjects);
+void addGrade(std::vector<Subject> subjects, Student &student, std::vector<Grade> &allGrades);
+int gradeSelector();
+std::string gradeTypeSelector();
+bool compareSubjectsById(Subject& a, Subject& b);
+void finishStudentGrades(Student &student, std::vector<Subject> subjects);
+void clearScreen();
 
 #endif

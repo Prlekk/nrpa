@@ -221,19 +221,7 @@ void selectStudentWhereIdIsInput(int selectedId, std::vector<Student> students, 
             }
         }
         printText("\t" + getSubjectName(i, subjects) + ": " + line);
-        // if(!line.empty()) line;
-        // printText(line);
-        // printText("\tavg.:\t" + std::to_string(average / size));
-        // if(finishGrade(students[index], i) == 0) {
-        //     printText("\tNot enough grades to finish the subject.");
-        // }else {
-        //     printText("Finished Grade:\t" + std::to_string(finishGrade(students[index], i)));
-        // }
-        // printText("");
     }
-    // printText(students[index].getName() + " success:");
-    // printText(std::to_string(studentSuccess(students[index])));
-    // printText("-----------------------");
 }
 
 void selectIdAndNameFromStudents(std::vector<Student> students){
@@ -298,6 +286,16 @@ void Student::addGrade(int num, std::vector<Grade> &allGrades) {
     allGrades.push_back(grade);
 }
 
+void Student::addGrade(int subjectId, int studentId, int gradeNum, std::string gradeType, std::vector<Grade>& allGrades) {
+    Grade grade;
+    grade.setId(firstAvaliableId(allGrades));
+    grade.setStudentId(studentId);
+    grade.setSubjectId(subjectId);
+    grade.setGrade(gradeNum);
+    grade.setGradeType(gradeType);
+    grades.push_back(grade);
+}
+
 void selectAllGrades(Student student, std::vector<Subject> subjects) {
     std::string line = "";
     printText("ID\t| Subject | Grade");
@@ -318,7 +316,7 @@ void createSchool(std::vector<Subject> &subjects, std::vector<Student> &students
     std::strftime(timestamp, sizeof(timestamp), "%d%m%Y_%H%M%S", timeInfo);
     std::string filename = "output_" + std::string(timestamp) + ".txt";
     std::ofstream outputFile(filename);
-
+    
     if (!outputFile.is_open()) {
         std::cerr << "Failed to open the file: " << filename << std::endl;
     }else {
@@ -327,7 +325,7 @@ void createSchool(std::vector<Subject> &subjects, std::vector<Student> &students
             for(int j = 0; j < students.size(); j++) {
                 subjects[i].addStudent(students[j]);
                 outputFile << "Added " + students[j].getName() + " to " + subjects[i].getName() + "." << std::endl;
-                for(int k = 0; k < rand() % 8; k++) {
+                for(int k = 0; k < rand() % 6 + 4; k++) {
                     students[j].addGrade(subjects[i].getId(), grades);
                     outputFile << "Added grade ID " << students[j].getGrades()[students[j].getGrades().size()-1].getId() << " to " + students[j].getName() + "." << std::endl;
                 }
@@ -405,16 +403,19 @@ void selectStudentOptions() {
     printText("1\tSelect Grade");
     printText("2\tAdd Grade");
     printText("3\tRemove Grade");
+    printText("4\tFinish Grades");
     printText("");
     printText("0\tExit program");
     printText("----------------------------");
 }
 
-void handleSelectedOptionForGrade(int selectedOption, int selectedId, std::vector<Student> students, std::vector<Subject> subjects) {
+void handleSelectedOptionForGrade(int selectedOption, int selectedId, std::vector<Student> students, std::vector<Subject> subjects, std::vector<Grade> &allGrades) {
     int index = findIndexWithId(selectedId, students);
     std::vector<Grade> grades = students[index].getGrades();
     std::vector<int> distinctGrades = selectDistinctSubjects(grades);
     std::string line = "";
+    int option = -1;
+    Grade selectedGrade;
     switch (selectedOption) {
         case 0:
             break;
@@ -429,12 +430,181 @@ void handleSelectedOptionForGrade(int selectedOption, int selectedId, std::vecto
             printText("");
             printText("0\tExit program");
             printText("-------------------------");
+            do{
+                option = userInput(1, firstAvaliableId(students[index].getGrades())-1);
+                if(option == 0) {
+                    break;
+                }
+                if(binarySearch(students[index].getGrades(), 0, students[index].getGrades().size()-1, option) == -1) {
+                    printText(students[index].getName() + " does not posses grade with ID of " + std::to_string(option));
+                }
+            }while(binarySearch(students[index].getGrades(), 0, students[index].getGrades().size()-1, option) == -1);
+            printText("-------------------------");
+            if(option == 0) {
+                break;
+            }else {
+                selectedGrade = students[index].getGrades()[findIndexWithId(option, students[index].getGrades())];
+                printGradeInfo(selectedGrade, subjects);
+            }
             break;
         case 2:
+            addGrade(subjects, students[index], allGrades);
             break;
         case 3:
             break;
+        case 4:
+            finishStudentGrades(students[index], subjects);
+            break;
         default:
             break;
+    }
+}
+
+int binarySearch(std::vector<int> arr, int l, int r, int x) {
+    while (l <= r) {
+        int m = l + (r - l) / 2;
+ 
+        if (arr[m] == x)
+            return arr[m];
+ 
+        if (arr[m] < x)
+            l = m + 1;
+ 
+        else
+            r = m - 1;
+    }
+    return -1;
+}
+
+int binarySearch(std::vector<Grade> arr, int l, int r, int x) {
+    while(l <= r) {
+        int m = l + (r - l) / 2;
+ 
+        if (arr[m].getId() == x)
+            return arr[m].getId();
+ 
+        if (arr[m].getId() < x)
+            l = m + 1;
+ 
+        else
+            r = m - 1;
+    }
+    return -1;
+}
+
+int binarySearch(std::vector<Subject> arr, int l, int r, int x) {
+    while(l <= r) {
+        int m = l + (r - l) / 2;
+ 
+        if (arr[m].getId() == x)
+            return arr[m].getId();
+ 
+        if (arr[m].getId() < x)
+            l = m + 1;
+ 
+        else
+            r = m - 1;
+    }
+    return -1;
+}
+
+void printGradeInfo(Grade grade, std::vector<Subject> subjects) {
+    std::string line = "";
+    printText("ID\t| Subject | Grade | Grade Type");
+    printText("-------------------------");
+    line = std::to_string(grade.getId()) + "\t| " + getSubjectName(grade.getSubjectId(), subjects) + "\t  | " + std::to_string(grade.getGrade()) + "\t  | " + grade.getGradeType();
+    printText(line);
+    printText("-------------------------");
+}
+
+bool compareSubjectsById(Subject& a, Subject& b) {
+    return a.getId() < b.getId();
+}
+
+void finishStudentGrades(Student &student, std::vector<Subject> subjects) {
+    double sum = 0;
+    int subjectId = 0;
+    int count = 0;
+    printText("Finished grades: ");
+    for(int i = 0; i < student.getGrades().size(); i++) {
+        subjectId = student.getGrades()[i].getSubjectId();
+        while(student.getGrades()[i].getSubjectId() == subjectId) {
+            sum += student.getGrades()[i].getGrade();
+            i++;
+            count++;
+        }
+        printText("\t" + getSubjectName(subjectId, subjects) + ":\t" +  std::to_string((int)round(sum/count)) );
+        sum = 0;
+        count = 0;
+    }
+}
+
+void addGrade(std::vector<Subject> subjects, Student &student, std::vector<Grade> &allGrades) {
+    std::vector<Subject> temp = subjects;
+    std::sort(temp.begin(), temp.end(), compareSubjectsById);
+    int option = -1;
+    int id = -1;
+    int subjectId = -1;
+    int studentId = -1;
+    int gradeNum = -1;
+    std::string gradeType = "";
+    printText("-------------------------");
+    printText("Choose a subject to which you want to add a grade:");
+    selectIdAndNameFromSubjects(subjects);
+    do{
+        option = userInput(1, firstAvaliableId(temp)-1);
+        if(option == 0) {
+            break;
+        }
+        if(binarySearch(temp, 0, temp.size()-1, option) == -1) {
+            printText("Subject with ID " + std::to_string(option) + " does not exist.");
+        }
+    }while(binarySearch(temp, 0, temp.size()-1, option) == -1);
+    if (option != 0) {
+        printText("You have chosen " + getSubjectName(option, temp));
+        printText("-------------------------");
+        id = firstAvaliableId(allGrades);
+        subjectId = option;
+        studentId = student.getId();
+        printText("Choose a grade: ");
+        gradeNum = userInput(1, 5);
+        printText("Choose a grade type:");
+        gradeType = gradeTypeSelector();
+
+        Grade grade(id, studentId, subjectId, gradeNum, gradeType);
+        student.getGrades().push_back(grade);
+        //student.getGrades().push_back(grade);
+        allGrades.push_back(grade);
+        printText("Grade added successfully");
+    }
+
+    printText("-------------------------");
+}
+
+int gradeSelector() {
+    int option = userInput(1, 5);
+    return option;
+}
+
+std::string gradeTypeSelector() {
+    int option = userInput(1, 3);
+    switch (option)
+    {
+    case 1:
+        return "Ustno";
+        break;
+    case 2:
+        return "Pisno";
+    case 3:
+        return "Sprotno delo";
+    default:
+        break;
+    }
+    return "";
+}
+
+void clearScreen() {
+    for(int i = 0; i < 255; i++) {
+        printText("");
     }
 }

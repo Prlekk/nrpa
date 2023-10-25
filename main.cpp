@@ -12,32 +12,35 @@ int main() {
 
     createSchool(subjects, students, allGrades);
     printText("Added " + std::to_string(allGrades.size()) + " grades to " + std::to_string(subjects.size()) + " subjects with " + std::to_string(students.size()) + " students.");
-    mainUserInterface();
-
-    int input = userInput(0, 3);
+    int input;
     int selectedSubjectId = -1;
     int selectedStudentId = -1;
     int selectedGradeId = -1;
     int selectedOption = 0;
 
-    switch (input) {
-        case 1:
-            selectIdAndNameFromSubjects(subjects);
-            selectedSubjectId = userInput(0, subjects.size());
-            break;
-        case 2:
-            selectIdAndNameFromStudents(students);
-            selectedStudentId = userInput(0, students.size());
-            selectStudentWhereIdIsInput(selectedStudentId, students, subjects);
-            selectStudentOptions();
-            selectedOption = userInput(0, 3);
-            handleSelectedOptionForGrade(selectedOption, selectedStudentId, students, subjects);
-            break;
-        case 3:
-            selectIdAndNameFromGrades(allGrades, subjects, students);
-        case 0:
-            return 0;
-        default:
-            break;
+    while(1){
+        mainUserInterface();
+        input = userInput(0, 3);
+        switch (input) {
+            case 1:
+                selectIdAndNameFromSubjects(subjects);
+                selectedSubjectId = userInput(0, subjects.size());
+                break;
+            case 2:
+                selectIdAndNameFromStudents(students);
+                selectedStudentId = userInput(0, students.size());
+                selectStudentWhereIdIsInput(selectedStudentId, students, subjects);
+                selectStudentOptions();
+                selectedOption = userInput(0, 4);
+                handleSelectedOptionForGrade(selectedOption, selectedStudentId, students, subjects, allGrades);
+                break;
+            case 3:
+                selectIdAndNameFromGrades(allGrades, subjects, students);
+                break;
+            case 0:
+                return 0;
+            default:
+                break;
+        }
     }
 }

@@ -27,6 +27,7 @@ int Grade::getSubjectId() { return subjectId; }
 int Grade::getGrade() { return grade; }
 const std::string& Grade::getGradeType() { return gradeType; }
 
+
 //Class methods
 
 void sleep(int time) {

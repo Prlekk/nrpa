@@ -49,6 +49,7 @@ public:
 
     //Class Methods
     void addGrade(int num, std::vector<Grade> &allGrades);
+    void addGrade(int subjectId, int studentId, int grade, std::string gradeType, std::vector<Grade>& allGrades);
 };
 
 
