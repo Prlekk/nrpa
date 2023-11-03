@@ -18,6 +18,8 @@ private:
     std::string country;
     std::string phoneNumber;
     std::vector<Grade> grades;
+    std::vector<Homework> homework;
+    bool finishedGrades = false;
 public:
     //Constructors
     Student();
@@ -35,6 +37,10 @@ public:
     void setCity(const std::string& c);
     void setCountry(const std::string& c);
     void setPhoneNumber(const std::string& p);
+    void setGrades(const std::vector<Grade>& g);
+    void setHomework(const std::vector<Homework>& h);
+    void addHomeworkToHomeworks(Homework& h);
+    void setFinishedGrades (const bool& f);
 
     //Getters
     int getId();
@@ -46,6 +52,9 @@ public:
     const std::string& getCountry();
     const std::string& getPhoneNumber();
     std::vector<Grade> getGrades();
+    std::vector<Homework> getHomework();
+    bool getFinishedGrades();
+    
 
     //Class Methods
     void addGrade(int num, std::vector<Grade> &allGrades);

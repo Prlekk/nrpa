@@ -1,6 +1,8 @@
 #ifndef GRADE_H
 #define GRADE_H
 
+#include "Homework.h"
+
 #include <string>
 #include <iostream>
 #include <thread>

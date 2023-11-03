@@ -23,6 +23,7 @@ class Subject {
         void setId(int i);
         void setName(const std::string& n);
         void setTeacher(const std::string& t);
+        void setStudents(const std::vector<Student>& s);
         
         //Getters
         int getId();
@@ -31,7 +32,7 @@ class Subject {
         std::vector<Student> getStudents();
 
         //Class methods
-        void addStudent(Student student);
+        void addStudent(Student& student);
 };
 
 #endif
