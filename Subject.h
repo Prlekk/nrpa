@@ -34,5 +34,4 @@ class Subject {
         //Class methods
         void addStudent(Student& student);
 };
-
 #endif
